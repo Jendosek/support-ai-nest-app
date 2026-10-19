@@ -6,5 +6,8 @@ async function bootstrap() {
     instrument: ObserveInstrument,
   });
   await app.listen(process.env.PORT ?? 3000);
+
+  app.enableShutdownHooks();
 }
 await bootstrap();
+

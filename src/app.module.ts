@@ -1,7 +1,16 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { createObserveModule } from '@nestjs/observe';
-import { AppController } from './app.controller.js';
-import { AppService } from './app.service.js';
+import { PrismaModule } from './prisma/prisma.module.js';
+import { HealthModule } from './health/health.module.js';
+import { UsersModule } from './users/users.module.js';
+import { AuthModule } from './auth/auth.module.js';
+import { TicketsModule } from './tickets/tickets.module.js';
+import { LlmModule } from './llm/llm.module.js';
+import { KnowledgeModule } from './knowledge/knowledge.module.js';
+import { ToolsModule } from './tools/tools.module.js';
+import { ConversationsModule } from './conversations/conversations.module.js';
+
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -14,8 +23,18 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       appSecret: 'YOUR_APP_SECRET',
       serviceId: 'support-ai-nest-app',
     }),
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    HealthModule,
+    UsersModule,
+    AuthModule,
+    TicketsModule,
+    LlmModule,
+    KnowledgeModule,
+    ToolsModule,
+    ConversationsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

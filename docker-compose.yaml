@@ -1,0 +1,42 @@
+# No "version:" key: it's obsolete in the current Compose Specification.
+# Old tutorials have "version: '3.8'" - Compose now ignores it and warns.
+
+services:
+  postgres:
+    # Pin the major version: "latest" can silently jump to a new major
+    # with breaking changes and your data may become incompatible.
+    image: postgres:17-alpine
+    # alpine = smaller image (~100MB vs ~400MB), same Postgres inside.
+
+    container_name: support-bot-db
+    # Fixed name so commands like "docker exec support-bot-db ..." are predictable.
+
+    restart: unless-stopped
+    # Auto-restart after Docker/PC restart, unless you stopped it manually.
+
+    environment:
+      # The official image reads these on FIRST start to create user + database.
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    ports:
+      # "HOST:CONTAINER". Left side = port on your Windows,
+      # right side = port inside container (Postgres always listens on 5432).
+      - "${POSTGRES_PORT}:5432"
+
+    volumes:
+      # Named volume -> folder where Postgres stores its data files.
+      - pgdata:/var/lib/postgresql/data
+
+    healthcheck:
+      # pg_isready ships with Postgres and checks if DB accepts connections.
+      # "Container started" != "database ready" - this tells them apart.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+# Declare named volumes here. Docker manages where they physically live.
+volumes:
+  pgdata: 
